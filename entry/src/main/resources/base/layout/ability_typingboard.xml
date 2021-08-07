@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DirectionalLayout
+    xmlns:ohos="http://schemas.huawei.com/res/ohos"
+    ohos:height="match_parent"
+    ohos:width="match_parent"
+    ohos:background_element="#FFF8F8BB"
+    ohos:orientation="vertical">
+
+    <TextField
+        ohos:id="$+id:remote_input"
+        ohos:height="600vp"
+        ohos:width="match_parent"
+        ohos:background_element="$graphic:background_text_field"
+        ohos:bottom_margin="25vp"
+        ohos:left_margin="25vp"
+        ohos:left_padding="10vp"
+        ohos:multiple_lines="true"
+        ohos:right_margin="25vp"
+        ohos:right_padding="10vp"
+        ohos:text_alignment="left"
+        ohos:text_size="18vp"
+        ohos:top_margin="25vp"/>
+
+    <Button
+        ohos:id="$+id:get_paste"
+        ohos:height="match_content"
+        ohos:width="match_parent"
+        ohos:background_element="$graphic:background_button"
+        ohos:left_margin="45vp"
+        ohos:right_margin="45vp"
+        ohos:text="获取远程设备剪切板"
+        ohos:text_size="30vp"/>
+
+</DirectionalLayout>

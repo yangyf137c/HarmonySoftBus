@@ -1,7 +1,6 @@
 package com.hoperun.control;
 
 import com.hoperun.control.constants.EventConstants;
-import com.hoperun.control.proxy.ConnectManagerIml;
 import com.hoperun.control.utils.LogUtils;
 import ohos.aafwk.ability.Ability;
 import ohos.aafwk.content.Intent;
@@ -9,10 +8,8 @@ import ohos.aafwk.content.Operation;
 import ohos.event.commonevent.CommonEventData;
 import ohos.event.commonevent.CommonEventManager;
 import ohos.rpc.*;
-import ohos.hiviewdfx.HiLog;
-import ohos.hiviewdfx.HiLogLabel;
 
-import static com.hoperun.control.proxy.ConnectManagerIml.*;
+import static com.hoperun.control.proxy.RemoteConnectManagerIml.*;
 
 public class RemoteService extends Ability {
     public static final int ERR_OK = 0;

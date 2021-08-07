@@ -17,6 +17,8 @@ public class MainAbility extends Ability {
 
         super.onStart(intent);
         super.setMainRoute(MainAbilitySlice.class.getName());
+        //虽然一个 Page 可以包含多个 AbilitySlice，但是 Page 进入前台时界面默认只展示一个 AbilitySlice。
+        // 默认展示的 AbilitySlice 是通过setMainRoute()方法来指定的。
 
         if (verifySelfPermission(DISTRIBUTED_DATASYNC) != IBundleManager.PERMISSION_GRANTED) {
             // 没有权限

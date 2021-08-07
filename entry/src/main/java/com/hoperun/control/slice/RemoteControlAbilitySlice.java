@@ -1,29 +1,16 @@
 package com.hoperun.control.slice;
 
 import com.hoperun.control.ResourceTable;
-import com.hoperun.control.constants.EventConstants;
 import com.hoperun.control.proxy.ConnectManager;
-import com.hoperun.control.proxy.ConnectManagerIml;
-import com.hoperun.control.utils.AbilityMgr;
-import com.hoperun.control.utils.LogUtils;
+import com.hoperun.control.proxy.RemoteConnectManagerIml;
 import ohos.aafwk.ability.AbilitySlice;
 import ohos.aafwk.ability.IAbilityContinuation;
 import ohos.aafwk.content.Intent;
 import ohos.aafwk.content.IntentParams;
 import ohos.agp.components.*;
-import ohos.agp.components.surfaceprovider.SurfaceProvider;
-import ohos.agp.graphics.Surface;
-import ohos.agp.graphics.SurfaceOps;
 import ohos.agp.utils.LayoutAlignment;
 import ohos.agp.window.dialog.ToastDialog;
-import ohos.agp.window.service.WindowManager;
-import ohos.event.commonevent.*;
-import ohos.global.resource.RawFileDescriptor;
-import ohos.media.common.Source;
-import ohos.media.player.Player;
-import ohos.rpc.RemoteException;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -45,7 +32,6 @@ public class RemoteControlAbilitySlice extends AbilitySlice implements IAbilityC
     public void onStart(Intent intent) {
         super.onStart(intent);
         super.setUIContent(ResourceTable.Layout_ability_remote_control);
-
 
         initView();
         initListener();
@@ -77,7 +63,7 @@ public class RemoteControlAbilitySlice extends AbilitySlice implements IAbilityC
             Map<String, String> map = new HashMap<>(INIT_SIZE);
             map.put("inputString", ss);
             if (connectManager != null) {
-                connectManager.sendRequest(ConnectManagerIml.REQUEST_SEND_DATA, map);
+                connectManager.sendRequest(RemoteConnectManagerIml.REQUEST_SEND_DATA, map);
             }
         });
 
@@ -92,7 +78,7 @@ public class RemoteControlAbilitySlice extends AbilitySlice implements IAbilityC
                 map.put("plusA", plusA.getText());
                 map.put("plusB", plusB.getText());
                 if (connectManager != null) {
-                    int result = connectManager.sendRequest(ConnectManagerIml.REQUEST_PLUS, map);
+                    int result = (int)connectManager.sendRequest(RemoteConnectManagerIml.REQUEST_PLUS, map);
                     new ToastDialog(RemoteControlAbilitySlice.this).setText("计算结果接收成功").show();
                     plusText.setText("" + result);
                 }
@@ -125,7 +111,7 @@ public class RemoteControlAbilitySlice extends AbilitySlice implements IAbilityC
     }
 
     private void initConnManager(String deviceId) {
-        connectManager = ConnectManagerIml.getInstance();
+        connectManager = RemoteConnectManagerIml.getInstance();
         connectManager.connectPa(this, deviceId);
     }
 
@@ -143,11 +129,13 @@ public class RemoteControlAbilitySlice extends AbilitySlice implements IAbilityC
 
     @Override
     public boolean onStartContinuation() {
+        //Page 请求迁移后，系统首先回调此方法，开发者可以在此回调中决策当前是否可以执行迁移，比如，弹框让用户确认是否开始迁移。
         return true;
     }
 
     @Override
     public boolean onSaveData(IntentParams intentParams) {
+        //如果 onStartContinuation() 返回 true ，则系统回调此方法，开发者在此回调中保存必须传递到另外设备上以便恢复 Page 状态的数据。
         intentParams.setParam("input", textField.getText());
         intentParams.setParam("plusA", plusA.getText());
         intentParams.setParam("plusB", plusB.getText());
@@ -157,6 +145,9 @@ public class RemoteControlAbilitySlice extends AbilitySlice implements IAbilityC
 
     @Override
     public boolean onRestoreData(IntentParams intentParams) {
+        //源侧设备上 Page 完成保存数据后，系统在目标侧设备上回调此方法，开发者在此回调中接受用于恢复 Page 状态的数据。
+        // 注意，在目标侧设备上的 Page 会重新启动其生命周期，无论其启动模式如何配置。且系统回调此方法的时机在 onStart() 之前。
+
         //这里内部嵌入了一个线程，要更新UI主线程中的组件上的值，要先拿到UI线程，然后投递任务Runnable过去
         //在任务Runnable中，向UI组件写值
         getUITaskDispatcher().asyncDispatch(new Runnable() {
@@ -173,6 +164,8 @@ public class RemoteControlAbilitySlice extends AbilitySlice implements IAbilityC
 
     @Override
     public void onCompleteContinuation(int i) {
+        //目标侧设备上恢复数据一旦完成，系统就会在源侧设备上回调 Page 的此方法，以便通知应用迁移流程已结束。
+        // 开发者可以在此检查迁移结果是否成功，并在此处理迁移结束的动作，例如，应用可以在迁移完成后终止自身生命周期。
         new ToastDialog(RemoteControlAbilitySlice.this).setText("迁移成功").show();
     }
 }

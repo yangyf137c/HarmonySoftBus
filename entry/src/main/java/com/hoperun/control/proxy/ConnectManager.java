@@ -22,7 +22,7 @@ import java.util.Map;
 /**
  * 远程连接管理类接口
  */
-public interface ConnectManager {
+public interface ConnectManager<returnType,paramsType> {
     /**
      * 连接远程PA
      *
@@ -37,5 +37,5 @@ public interface ConnectManager {
      * @param requestType 指令类型
      * @param params 指令参数
      */
-    int sendRequest(int requestType, Map<String, String> params);
+    returnType sendRequest(int requestType, paramsType params);
 }
