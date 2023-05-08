@@ -3,7 +3,7 @@ package com.hoperun.control.slice;
 import com.hoperun.control.ResourceTable;
 import com.hoperun.control.component.SelectDeviceDialog;
 import com.hoperun.control.constants.EventConstants;
-import com.hoperun.control.proxy.RemoteConnectManagerIml;
+import com.hoperun.control.proxy.ConnectManagerIml;
 import com.hoperun.control.utils.AbilityMgr;
 import com.hoperun.control.utils.LogUtils;
 import ohos.aafwk.ability.AbilitySlice;
@@ -17,7 +17,6 @@ import ohos.rpc.RemoteException;
 public class MainAbilitySlice extends AbilitySlice {
     private static final String ABILITY_NAME = "com.hoperun.control.RemoteControlAbility";
     private static final String TAG = MainAbilitySlice.class.getSimpleName();
-    private static final String MOVIE_URL = "entry/resources/base/media/gubeishuizhen.mp4";
 
     private Text selectDeviceText;
     private Text receiveText;
@@ -98,10 +97,10 @@ public class MainAbilitySlice extends AbilitySlice {
         public void onReceiveEvent(CommonEventData commonEventData) {
             Intent intent = commonEventData.getIntent();
             int requestType = intent.getIntParam("requestType", 0);
-            if (requestType == RemoteConnectManagerIml.REQUEST_SEND_DATA) {
+            if (requestType == ConnectManagerIml.REQUEST_SEND_DATA) {
                 String inputString = intent.getStringParam("inputString");
                 receiveText.setText(inputString);
-            } else if (requestType == RemoteConnectManagerIml.REQUEST_PLUS) {
+            } else if (requestType == ConnectManagerIml.REQUEST_PLUS) {
                 String plusResult = intent.getStringParam("plusResult");
                 new ToastDialog(MainAbilitySlice.this).setText("计算成功:" + plusResult + " 回传数据").show();
             } else {

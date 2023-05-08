@@ -2,11 +2,12 @@ package com.hoperun.control.slice;
 
 import com.hoperun.control.ResourceTable;
 import com.hoperun.control.proxy.ConnectManager;
-import com.hoperun.control.proxy.RemoteConnectManagerIml;
+import com.hoperun.control.proxy.ConnectManagerIml;
 import ohos.aafwk.ability.AbilitySlice;
 import ohos.aafwk.ability.IAbilityContinuation;
 import ohos.aafwk.content.Intent;
 import ohos.aafwk.content.IntentParams;
+import ohos.aafwk.content.Operation;
 import ohos.agp.components.*;
 import ohos.agp.utils.LayoutAlignment;
 import ohos.agp.window.dialog.ToastDialog;
@@ -27,7 +28,7 @@ public class RemoteControlAbilitySlice extends AbilitySlice implements IAbilityC
     private Button plusBtn;
     private Text plusText;
 
-    private Button migrateBtn, migrateBackBtn;
+    private Button migrateBtn, migrateBackBtn,docBtn;
     @Override
     public void onStart(Intent intent) {
         super.onStart(intent);
@@ -41,7 +42,7 @@ public class RemoteControlAbilitySlice extends AbilitySlice implements IAbilityC
         // 获取想被控制的设备ID
         deviceIdConn = intent.getStringParam("localDeviceId");
         // 连接被控制的设备PA
-        initConnManager(deviceIdConn);
+        initConnManager(deviceIdConn,ConnectManagerIml.RemoteType);
     }
 
     private void initView() {
@@ -55,6 +56,7 @@ public class RemoteControlAbilitySlice extends AbilitySlice implements IAbilityC
         plusBtn = (Button) findComponentById(ResourceTable.Id_plus);
         migrateBtn = (Button) findComponentById(ResourceTable.Id_migrate);
         migrateBackBtn = (Button) findComponentById(ResourceTable.Id_migrate_back);
+        docBtn=(Button) findComponentById(ResourceTable.Id_doc);
     }
 
     private void initListener() {
@@ -63,7 +65,7 @@ public class RemoteControlAbilitySlice extends AbilitySlice implements IAbilityC
             Map<String, String> map = new HashMap<>(INIT_SIZE);
             map.put("inputString", ss);
             if (connectManager != null) {
-                connectManager.sendRequest(RemoteConnectManagerIml.REQUEST_SEND_DATA, map);
+                connectManager.sendRequest(ConnectManagerIml.REQUEST_SEND_DATA, map);
             }
         });
 
@@ -78,7 +80,7 @@ public class RemoteControlAbilitySlice extends AbilitySlice implements IAbilityC
                 map.put("plusA", plusA.getText());
                 map.put("plusB", plusB.getText());
                 if (connectManager != null) {
-                    int result = (int)connectManager.sendRequest(RemoteConnectManagerIml.REQUEST_PLUS, map);
+                    int result = (int)connectManager.sendRequest(ConnectManagerIml.REQUEST_PLUS, map);
                     new ToastDialog(RemoteControlAbilitySlice.this).setText("计算结果接收成功").show();
                     plusText.setText("" + result);
                 }
@@ -104,14 +106,29 @@ public class RemoteControlAbilitySlice extends AbilitySlice implements IAbilityC
                 }
             }
         });
+
+        docBtn.setClickedListener(new Component.ClickedListener() {
+            @Override
+            public void onClick(Component component) {
+                Intent secondIntent = new Intent();
+                // 指定待启动FA的bundleName和abilityName
+                Operation operation = new Intent.OperationBuilder()
+                        .withDeviceId("")
+                        .withBundleName("com.hoperun.control")
+                        .withAbilityName("com.hoperun.control.DocAbility")
+                        .build();
+                secondIntent.setOperation(operation);
+                startAbility(secondIntent); // 通过AbilitySlice的startAbility接口实现启动另一个页面
+            }
+        });
     }
 
     private void showKeyBoard() {
         getUITaskDispatcher().delayDispatch(() -> textField.simulateClick(), SHOW_KEYBOARD_DELAY);
     }
 
-    private void initConnManager(String deviceId) {
-        connectManager = RemoteConnectManagerIml.getInstance();
+    private void initConnManager(String deviceId,int type) {
+        connectManager = ConnectManagerIml.getInstance(type);
         connectManager.connectPa(this, deviceId);
     }
 

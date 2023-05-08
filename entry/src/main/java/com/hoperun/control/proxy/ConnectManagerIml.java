@@ -24,12 +24,10 @@ import ohos.app.Context;
 import ohos.bundle.ElementName;
 import ohos.rpc.IRemoteObject;
 
-import java.util.Map;
-
 /**
  * 远程管理类实现
  */
-public class ConnectManagerIml implements ConnectManager {
+public class ConnectManagerIml<returnType,paramsType> implements ConnectManager<returnType,paramsType> {
     /**
      * 发送数据
      */
@@ -61,18 +59,29 @@ public class ConnectManagerIml implements ConnectManager {
     public static final int REQUEST_PAUSE_PLAY = 6;
     private static final String TAG = ConnectManagerIml.class.getName();
 
+    public static final int RemoteType = 1;
+    public static final int DocType=2;
+
     private static ConnectManager instance;
+    private int type=1;
     private IAbilityConnection conn;
-    private MyRemoteProxy proxy;
+    private Proxy proxy;
+
+    public ConnectManagerIml() {
+    }
+
+    public ConnectManagerIml(int type) {
+        this.type=type;
+    }
 
     /**
      * 获取管理类实例
      *
      * @return 管理类实例
      */
-    public static synchronized ConnectManager getInstance() {
+    public static synchronized ConnectManager getInstance(int type) {
         if (instance == null) {
-            instance = new ConnectManagerIml();
+            instance = new ConnectManagerIml(type);
         }
         return instance;
     }
@@ -97,8 +106,12 @@ public class ConnectManagerIml implements ConnectManager {
             conn = new IAbilityConnection() {
                 @Override
                 public void onAbilityConnectDone(ElementName elementName, IRemoteObject remote, int resultCode) {
-                    LogUtils.info(TAG, "===connectRemoteAbility done");
-                    proxy = new MyRemoteProxy(remote);
+                    LogUtils.info(TAG, "===connectAbility done");
+                    if(type==1)
+                        proxy = new MyRemoteProxy(remote);
+                    else if(type==2)
+                        proxy=new MyDocProxy(remote);
+                    //多态没实现好，需要手动输入类型来指定相应的代理
                 }
 
                 @Override
@@ -112,10 +125,11 @@ public class ConnectManagerIml implements ConnectManager {
     }
 
     @Override
-    public int sendRequest(int requestType, Map<String, String> params) {
-        int result = 0;
+    public returnType sendRequest(int requestType, paramsType params) {
+        returnType result = null;
         if (proxy != null) {
-            result = proxy.senDataToRemote(requestType, params);
+            Object t=proxy.senDataToRemote(requestType, params);
+            result = (returnType) proxy.senDataToRemote(requestType, params);
         }
         return result;
     }

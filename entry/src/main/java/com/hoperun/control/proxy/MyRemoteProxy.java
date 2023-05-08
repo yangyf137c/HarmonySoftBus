@@ -23,7 +23,7 @@ import java.util.Map;
 /**
  * 远程连接代理类
  */
-public class MyRemoteProxy implements IRemoteBroker {
+public class MyRemoteProxy implements IRemoteBroker,Proxy<Integer,Map<String,String>>{
     /**
      * 远端响应成功的标识
      */
@@ -40,7 +40,8 @@ public class MyRemoteProxy implements IRemoteBroker {
     }
     //如果调用者是 RemoteObject，则返回 RemoteObject； 如果调用者是 RemoteProxy，则返回 IRemoteObject。
 
-    public int senDataToRemote(int requestType, Map paramMap) {
+    @Override
+    public Integer senDataToRemote(int requestType, Map paramMap) {
         MessageParcel data = MessageParcel.obtain();
         //此类提供读写对象、接口令牌、文件描述符和大数据的方法。
         //obtain()创建一个 MessageParcel 对象。
@@ -61,13 +62,13 @@ public class MyRemoteProxy implements IRemoteBroker {
                 //option 指示发送消息的同步或异步模式。
             }
 
-            if (requestType == RemoteConnectManagerIml.REQUEST_PLUS) {
+            if (requestType == ConnectManagerIml.REQUEST_PLUS) {
                 data.writeInt(requestType);
                 data.writeInt(Integer.parseInt((String) paramMap.get("plusA")));
                 data.writeInt(Integer.parseInt((String) paramMap.get("plusB")));
                 remote.sendRequest(requestType, data, reply, option);
-            } else if (requestType == RemoteConnectManagerIml.REQUEST_START_PLAY ||
-                    requestType == RemoteConnectManagerIml.REQUEST_PAUSE_PLAY) {
+            } else if (requestType == ConnectManagerIml.REQUEST_START_PLAY ||
+                    requestType == ConnectManagerIml.REQUEST_PAUSE_PLAY) {
                 data.writeInt(requestType);
                 remote.sendRequest(requestType, data, reply, option);
             } else {
@@ -78,7 +79,7 @@ public class MyRemoteProxy implements IRemoteBroker {
             if (ec != ERR_OK) {
                 LogUtils.error(TAG, "RemoteException:");
             } else {
-                if (requestType == RemoteConnectManagerIml.REQUEST_PLUS) {
+                if (requestType == ConnectManagerIml.REQUEST_PLUS) {
                     result = reply.readInt();
                 }
             }
@@ -94,6 +95,6 @@ public class MyRemoteProxy implements IRemoteBroker {
             //reclaim() 将 MessageParcel 对象添加到缓存池。
             //此方法用于清除不再使用的 MessageParcel 对象。
         }
-        return ec;
+        return Integer.valueOf(ec);
     }
 }

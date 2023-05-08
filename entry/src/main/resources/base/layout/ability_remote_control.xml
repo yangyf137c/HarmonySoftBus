@@ -109,4 +109,15 @@
         ohos:right_margin="20vp"
         ohos:text="回迁"
         ohos:text_size="30vp"/>
+
+    <Button
+        ohos:top_margin="20vp"
+        ohos:id="$+id:doc"
+        ohos:height="match_content"
+        ohos:width="match_parent"
+        ohos:background_element="$graphic:background_button"
+        ohos:left_margin="20vp"
+        ohos:right_margin="20vp"
+        ohos:text="打开文档编辑"
+        ohos:text_size="30vp"/>
 </DirectionalLayout>

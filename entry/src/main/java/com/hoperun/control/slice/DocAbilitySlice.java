@@ -1,14 +1,16 @@
 package com.hoperun.control.slice;
 
 import com.hoperun.control.ResourceTable;
+import com.hoperun.control.proxy.ConnectManager;
+import com.hoperun.control.proxy.ConnectManagerIml;
 import ohos.aafwk.ability.AbilitySlice;
 import ohos.aafwk.ability.IAbilityContinuation;
 import ohos.aafwk.content.Intent;
 import ohos.aafwk.content.IntentParams;
 import ohos.agp.components.Button;
 import ohos.agp.components.Component;
-import ohos.agp.components.Text;
 import ohos.agp.components.TextField;
+import ohos.agp.utils.LayoutAlignment;
 import ohos.agp.window.dialog.ToastDialog;
 import ohos.miscservices.pasteboard.PasteData;
 import ohos.miscservices.pasteboard.SystemPasteboard;
@@ -17,6 +19,8 @@ public class DocAbilitySlice  extends AbilitySlice implements IAbilityContinuati
 
     private static final String TAG = DocAbilitySlice.class.getName();
     private TextField textField;
+    private ConnectManager connectManager;
+    private String deviceIdConn;
     private Button pasteBtn;
     private SystemPasteboard pasteboard;
 
@@ -27,6 +31,16 @@ public class DocAbilitySlice  extends AbilitySlice implements IAbilityContinuati
 
         initViews();
         initListener();
+
+        // 获取想被控制的设备ID
+        deviceIdConn = intent.getStringParam("localDeviceId");
+        // 连接被控制的设备PA
+        initConnManager(deviceIdConn,ConnectManagerIml.DocType);
+    }
+
+    private void initConnManager(String deviceId,int type) {
+        connectManager = ConnectManagerIml.getInstance(type);
+        connectManager.connectPa(this, deviceId);
     }
 
     private void initViews() {
@@ -40,7 +54,9 @@ public class DocAbilitySlice  extends AbilitySlice implements IAbilityContinuati
         pasteBtn.setClickedListener(new Component.ClickedListener() {
             @Override
             public void onClick(Component component) {
-
+                PasteData result = (PasteData)connectManager.sendRequest(ConnectManagerIml.REQUEST_SEND_DATA, (Integer)1);
+                new ToastDialog(DocAbilitySlice.this).setAlignment(LayoutAlignment.CENTER).setText("点击事件触发").show();
+                pasteboard.setPasteData(result);
             }
         });
     }
@@ -79,7 +95,9 @@ public class DocAbilitySlice  extends AbilitySlice implements IAbilityContinuati
         getUITaskDispatcher().asyncDispatch(new Runnable() {
             @Override
             public void run() {
-                pasteboard.setPasteData(PasteData.creatPlainTextData(intentParams.getParam("pasteData").toString()));
+                PasteData pasteData=(PasteData)intentParams.getParam("pasteData");
+                pasteboard.setPasteData(pasteData);
+                new ToastDialog(DocAbilitySlice.this).setAlignment(LayoutAlignment.CENTER).setText(pasteData.getPrimaryText().toString()).show();
             }
         });
         return true;
@@ -89,6 +107,6 @@ public class DocAbilitySlice  extends AbilitySlice implements IAbilityContinuati
     public void onCompleteContinuation(int i) {
         //目标侧设备上恢复数据一旦完成，系统就会在源侧设备上回调 Page 的此方法，以便通知应用迁移流程已结束。
         // 开发者可以在此检查迁移结果是否成功，并在此处理迁移结束的动作，例如，应用可以在迁移完成后终止自身生命周期。
-        new ToastDialog(DocAbilitySlice.this).setText("迁移成功").show();
+        new ToastDialog(DocAbilitySlice.this).setText("粘贴板迁移成功").show();
     }
 }

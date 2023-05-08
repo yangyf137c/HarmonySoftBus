@@ -74,6 +74,24 @@
         "icon": "$media:icon",
         "description": "$string:remoteservice_description",
         "type": "service"
+      },
+      {
+        "orientation": "unspecified",
+        "name": "com.hoperun.control.DocAbility",
+        "icon": "$media:icon",
+        "description": "$string:testsoftability_description",
+        "label": "$string:entry_TestSoftAbility",
+        "type": "page",
+        "launchType": "standard",
+        "metaData": {
+          "customizeData": [
+            {
+              "name": "hwc-theme",
+              "extra": "",
+              "value": "androidhwext:style/Theme.Emui.Light.NoTitleBar"
+            }
+          ]
+        }
       }
     ],
     "reqPermissions": [

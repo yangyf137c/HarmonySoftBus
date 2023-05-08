@@ -9,7 +9,7 @@ import ohos.event.commonevent.CommonEventData;
 import ohos.event.commonevent.CommonEventManager;
 import ohos.rpc.*;
 
-import static com.hoperun.control.proxy.RemoteConnectManagerIml.*;
+import static com.hoperun.control.proxy.ConnectManagerIml.*;
 
 public class RemoteService extends Ability {
     public static final int ERR_OK = 0;
