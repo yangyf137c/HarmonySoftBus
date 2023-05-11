@@ -39,6 +39,7 @@ public class RemoteControlAbilitySlice extends AbilitySlice implements IAbilityC
         // 延时 800ms 模拟点击事件，弹出软键盘
         showKeyBoard();
 
+        //该页面启动时，是被另一设备调用的，此处id为另一设备的id值
         // 获取想被控制的设备ID
         deviceIdConn = intent.getStringParam("localDeviceId");
         // 连接被控制的设备PA
@@ -63,7 +64,7 @@ public class RemoteControlAbilitySlice extends AbilitySlice implements IAbilityC
         // 监听文本变化，远程显示
         textField.addTextObserver((ss, ii, i1, i2) -> {
             Map<String, String> map = new HashMap<>(INIT_SIZE);
-            map.put("inputString", ss);
+            map.put("docContent", ss);
             if (connectManager != null) {
                 connectManager.sendRequest(ConnectManagerIml.REQUEST_SEND_DATA, map);
             }
@@ -92,6 +93,7 @@ public class RemoteControlAbilitySlice extends AbilitySlice implements IAbilityC
             public void onClick(Component component) {
                 if (deviceIdConn != null) {
                     continueAbilityReversibly(deviceIdConn);
+                    //迁移
                 }
             }
         });
@@ -111,6 +113,7 @@ public class RemoteControlAbilitySlice extends AbilitySlice implements IAbilityC
             @Override
             public void onClick(Component component) {
                 Intent secondIntent = new Intent();
+                secondIntent.setParam("localDeviceId", deviceIdConn);
                 // 指定待启动FA的bundleName和abilityName
                 Operation operation = new Intent.OperationBuilder()
                         .withDeviceId("")
@@ -128,7 +131,7 @@ public class RemoteControlAbilitySlice extends AbilitySlice implements IAbilityC
     }
 
     private void initConnManager(String deviceId,int type) {
-        connectManager = ConnectManagerIml.getInstance(type);
+        connectManager =new ConnectManagerIml(type);
         connectManager.connectPa(this, deviceId);
     }
 

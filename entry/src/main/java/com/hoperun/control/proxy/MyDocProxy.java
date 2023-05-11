@@ -3,7 +3,9 @@ package com.hoperun.control.proxy;
 import com.hoperun.control.utils.LogUtils;
 import ohos.rpc.*;
 
-public class MyDocProxy implements IRemoteBroker,Proxy<String,Integer>{
+import java.util.Map;
+
+public class MyDocProxy implements IRemoteBroker,Proxy<String,Map>{
     public static final int ERR_OK = 0;
     private static final String TAG = MyDocProxy.class.getSimpleName();
     private final IRemoteObject remote;
@@ -17,17 +19,25 @@ public class MyDocProxy implements IRemoteBroker,Proxy<String,Integer>{
     }
 
     @Override
-    public String senDataToRemote(int requestType, Integer param){
+    public String senDataToRemote(int requestType, Map paramMap){
         MessageParcel data = MessageParcel.obtain();
         //此类提供读写对象、接口令牌、文件描述符和大数据的方法。
         //obtain()创建一个 MessageParcel 对象。
         MessageParcel reply = MessageParcel.obtain();
         MessageOption option = new MessageOption(MessageOption.TF_SYNC);
         int ec = 1;
-        String result = null;
+        String result = "I'm empty!";
 
         try {
             if (requestType == ConnectManagerIml.REQUEST_SEND_DATA) {
+                data.writeInt(requestType);
+                data.writeString((String) paramMap.get("pasteContent"));
+                remote.sendRequest(requestType, data, reply, option);
+            }
+            else if(requestType == ConnectManagerIml.REQUEST_PASTE_CONTENT)
+            {
+                data.writeInt(requestType);
+                data.writeString((String) paramMap.get("docContent"));
                 remote.sendRequest(requestType, data, reply, option);
             }
         }

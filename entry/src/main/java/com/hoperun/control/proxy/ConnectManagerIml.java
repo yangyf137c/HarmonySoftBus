@@ -24,6 +24,8 @@ import ohos.app.Context;
 import ohos.bundle.ElementName;
 import ohos.rpc.IRemoteObject;
 
+import java.util.List;
+
 /**
  * 远程管理类实现
  */
@@ -32,6 +34,7 @@ public class ConnectManagerIml<returnType,paramsType> implements ConnectManager<
      * 发送数据
      */
     public static final int REQUEST_SEND_DATA = 1;
+
 
     /**
      * 请求查询
@@ -57,12 +60,14 @@ public class ConnectManagerIml<returnType,paramsType> implements ConnectManager<
      * 方向移动通知
      */
     public static final int REQUEST_PAUSE_PLAY = 6;
+
+    public static final int REQUEST_PASTE_CONTENT = 7;
     private static final String TAG = ConnectManagerIml.class.getName();
 
     public static final int RemoteType = 1;
     public static final int DocType=2;
 
-    private static ConnectManager instance;
+    private ConnectManager instance;
     private int type=1;
     private IAbilityConnection conn;
     private Proxy proxy;
@@ -79,12 +84,10 @@ public class ConnectManagerIml<returnType,paramsType> implements ConnectManager<
      *
      * @return 管理类实例
      */
-    public static synchronized ConnectManager getInstance(int type) {
-        if (instance == null) {
-            instance = new ConnectManagerIml(type);
-        }
-        return instance;
-    }
+//    public static ConnectManager getInstance(int type) {
+//            instance = new ConnectManagerIml(type);
+//        return instance;
+//    }
 
     /**
      * 连接远程PA

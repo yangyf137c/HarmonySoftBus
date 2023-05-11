@@ -70,6 +70,7 @@ public class MainAbilitySlice extends AbilitySlice {
         subscriber = new MyCommonEventSubscriber(subscribeInfo);
         try {
             CommonEventManager.subscribeCommonEvent(subscriber);
+            //订阅事件
         } catch (RemoteException e) {
             LogUtils.error("", "subscribeCommonEvent occur exception.");
         }
@@ -78,6 +79,7 @@ public class MainAbilitySlice extends AbilitySlice {
     private void unSubscribe() {
         try {
             CommonEventManager.unsubscribeCommonEvent(subscriber);
+            //退订所有事件
         } catch (RemoteException e) {
             LogUtils.error(TAG, "unSubscribe Exception");
         }
@@ -95,7 +97,9 @@ public class MainAbilitySlice extends AbilitySlice {
 
         @Override
         public void onReceiveEvent(CommonEventData commonEventData) {
+            //由开发者实现, 在接收到公共事件时被调用。
             Intent intent = commonEventData.getIntent();
+            //CommonEventData 封装公共事件相关信息。用于在发布、 分发和接收时处理数据。
             int requestType = intent.getIntParam("requestType", 0);
             if (requestType == ConnectManagerIml.REQUEST_SEND_DATA) {
                 String inputString = intent.getStringParam("inputString");

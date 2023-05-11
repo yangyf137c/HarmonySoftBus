@@ -22,6 +22,8 @@ public class EventConstants {
      */
     public static final String SCREEN_REMOTE_CONTROLL_EVENT = "screen_remote_control_event";
 
+    public static final String PASTEBOARD_MIGRATE_EVENT="pasteboard_migrate-event";
+
     private EventConstants() {
     }
 }
